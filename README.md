@@ -1,4 +1,11 @@
-# mini_PJT3_Infra
+# 🛡️ 가상 계좌 결제 시스템: 인프라 및 보안 아키텍처
+
+본 리포지토리는 **보안 격리(Security Isolation)**를 핵심 가치로 하는 커머스 결제 시스템의 인프라 구축 코드(IaC)와 배포 설정을 관리합니다.
+
+## 🏗️ 전체 시스템 아키텍처
+AWS 클라우드 환경에서 **3-티어(3-Tier) 망 분리**를 구현하여, 외부 공격으로부터 핵심 자산인 결제 및 데이터 서버를 보호합니다.
+
+```mermaid
 graph TD
     %% 외부 및 사용자
     User(("사용자<br>(HTTPS/443)"))
@@ -42,3 +49,4 @@ graph TD
     style WAS fill:#e1f5fe,stroke:#01579b,stroke-width:2px
     style RDS fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
     style NAT fill:#fff9c4,stroke:#fbc02d
+```
