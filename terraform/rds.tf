@@ -1,7 +1,7 @@
 # 1. RDS가 배치될 서브넷 그룹 정의 (2개 이상의 AZ에 걸친 DB 서브넷 사용)
 resource "aws_db_subnet_group" "database" {
   name       = "${var.project_name}-db-subnet-group"
-  subnet_ids = aws_subnet.database[*].id
+  subnet_ids = aws_subnet.public[*].id
 
   tags = {
     Name = "${var.project_name}-db-subnet-group"
@@ -19,8 +19,8 @@ resource "aws_security_group" "rds" {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.eks_nodes.id]
-    description     = "MySQL from EKS nodes only" 
+    cidr_blocks = ["0.0.0.0/0"] 
+    description = "Allow MySQL from Local"
   }
 
   # 아웃바운드: RDS는 외부 인터넷으로 나갈 이유가 없으므로 VPC 내부로만 제한
@@ -55,7 +55,7 @@ resource "aws_db_instance" "main" {
   
   skip_final_snapshot    = true # 프로젝트 종료 후 삭제 편의를 위함
   multi_az               = false # 비용 절감을 위해 단일 AZ (운영 시 true 권장)
-  publicly_accessible    = false # 외부 접근 차단 (보안 핵심)
+  publicly_accessible    = true # 외부 접근 차단 (보안 핵심)
 
   tags = {
     Name = "${var.project_name}-rds"

@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "프로젝트 이름 (리소스 이름 prefix)"
   type        = string
-  default     = "sample-app"
+  default     = "team01-mini-project3"
 }
 
 variable "environment" {
