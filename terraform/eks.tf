@@ -1,4 +1,62 @@
 # ────────────────────────────────────────────────────────────────────────────
+# EKS 노드 보안 그룹
+# ALB → 노드(NodePort), 노드 간 통신, 컨트롤 플레인 통신 제어
+# ────────────────────────────────────────────────────────────────────────────
+
+resource "aws_security_group" "eks_nodes" {
+  name        = "${var.project_name}-eks-nodes-sg"
+  description = "Security group for EKS worker nodes"
+  vpc_id      = aws_vpc.main.id
+
+  # 노드 간 전체 통신 허용 (클러스터 내부 Pod-to-Pod, CNI 등)
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self      = true
+  }
+
+  # ALB에서 노드로의 트래픽 허용 (NodePort 범위: 30000-32767)
+  ingress {
+    from_port   = 30000
+    to_port     = 32767
+    protocol    = "tcp"
+    cidr_blocks = var.public_subnet_cidrs
+    description = "ALB to NodePort"
+  }
+
+  # EKS 컨트롤 플레인 → 노드 kubelet 통신
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+    description = "Control plane to kubelet"
+  }
+
+  ingress {
+    from_port   = 10250
+    to_port     = 10250
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+    description = "Kubelet API"
+  }
+
+  # 아웃바운드 전체 허용 (NAT GW를 통해 ECR pull, 외부 API 호출 등)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound"
+  }
+
+  tags = {
+    Name = "${var.project_name}-eks-nodes-sg"
+  }
+}
+
+# ────────────────────────────────────────────────────────────────────────────
 # EKS 클러스터 IAM 역할
 # AmazonEKSClusterPolicy: EKS 컨트롤 플레인이 EC2·ELB 등 AWS 리소스를 관리하기 위해 필요
 # ────────────────────────────────────────────────────────────────────────────
@@ -98,31 +156,12 @@ resource "aws_iam_role_policy" "backend_s3" {
         "s3:DeleteObject",
         "s3:ListBucket"
       ]
-      Resource = ["*"] # 실제 운영 환경에서는 특정 버킷 ARN으로 제한 권장
+      Resource = local.s3_bucket_arns # 실제 운영 환경에서는 특정 버킷 ARN으로 제한 권장
     }]
   })
 }
 
 # ────────────────────────────────────────────────────────────────────────────
-
-resource "aws_iam_role_policy" "node_s3" {
-  name = "${var.project_name}-node-s3-policy"
-  role = aws_iam_role.eks_node.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket"
-      ]
-      Resource = ["*"]
-    }]
-  })
-}
 # 노드 그룹 IAM 역할
 # AmazonEKSWorkerNodePolicy : 노드가 클러스터에 등록되고 통신하기 위해 필요
 # AmazonEC2ContainerRegistryReadOnly : ECR에서 이미지를 pull하기 위해 필요
@@ -155,6 +194,26 @@ resource "aws_iam_role_policy_attachment" "eks_ecr_read_only" {
 resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   role       = aws_iam_role.eks_node.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+resource "aws_iam_role_policy" "node_s3" {
+  name = "${var.project_name}-node-s3-policy"
+  role = aws_iam_role.eks_node.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket"
+      ]
+      # main.tf의 로컬 변수로 특정 버킷 ARN만 허용 (최소 권한 원칙)
+      Resource = local.s3_bucket_arns
+    }]
+  })
 }
 
 # ────────────────────────────────────────────────────────────────────────────

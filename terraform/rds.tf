@@ -19,16 +19,17 @@ resource "aws_security_group" "rds" {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    # 실제 환경에서는 EKS 노드 그룹의 보안 그룹 ID를 지정합니다.
-    # security_groups = [aws_security_group.eks_nodes.id] 
-    cidr_blocks     = var.private_subnet_cidrs # 우선 WAS 대역폭 전체 허용으로 설정
+    security_groups = [aws_security_group.eks_nodes.id]
+    description     = "MySQL from EKS nodes only" 
   }
 
+  # 아웃바운드: RDS는 외부 인터넷으로 나갈 이유가 없으므로 VPC 내부로만 제한
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.vpc_cidr]
+    description = "Allow outbound within VPC only"
   }
 
   tags = {
