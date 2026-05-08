@@ -23,8 +23,8 @@ locals {
   s3_bucket_arns = [
     aws_s3_bucket.app.arn,
     "${aws_s3_bucket.app.arn}/*",
-    aws_s3_bucket.frontend_static.arn,
-    "${aws_s3_bucket.frontend_static.arn}/*",
+    # aws_s3_bucket.frontend_static.arn,
+    # "${aws_s3_bucket.frontend_static.arn}/*",
   ]
 }
 
