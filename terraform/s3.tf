@@ -78,37 +78,37 @@ resource "aws_s3_bucket_cors_configuration" "app" {
 
 # ── 정적 파일 버킷 (프론트엔드) ────────────────────────────────────────────
 
-resource "aws_s3_bucket" "frontend_static" {
-  bucket = "${var.project_name}-frontend-static-${var.environment}"
+# resource "aws_s3_bucket" "frontend_static" {
+#   bucket = "${var.project_name}-frontend-static-${var.environment}"
 
-  tags = {
-    Name = "${var.project_name}-frontend-static"
-  }
-}
+#   tags = {
+#     Name = "${var.project_name}-frontend-static"
+#   }
+# }
 
-resource "aws_s3_bucket_public_access_block" "frontend_static" {
-  bucket = aws_s3_bucket.frontend_static.id
+# resource "aws_s3_bucket_public_access_block" "frontend_static" {
+#   bucket = aws_s3_bucket.frontend_static.id
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
+#   block_public_acls       = true
+#   block_public_policy     = true
+#   ignore_public_acls      = true
+#   restrict_public_buckets = true
+# }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "frontend_static" {
-  bucket = aws_s3_bucket.frontend_static.id
+# resource "aws_s3_bucket_server_side_encryption_configuration" "frontend_static" {
+#   bucket = aws_s3_bucket.frontend_static.id
 
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
+#   rule {
+#     apply_server_side_encryption_by_default {
+#       sse_algorithm = "AES256"
+#     }
+#   }
+# }
 
-resource "aws_s3_bucket_versioning" "frontend_static" {
-  bucket = aws_s3_bucket.frontend_static.id
+# resource "aws_s3_bucket_versioning" "frontend_static" {
+#   bucket = aws_s3_bucket.frontend_static.id
 
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
+#   versioning_configuration {
+#     status = "Enabled"
+#   }
+# }
