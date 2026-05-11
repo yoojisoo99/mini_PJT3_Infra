@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: team01-ingress
+  namespace: mini-project3
+  annotations:
+    # AWS ALB를 사용하기 위한 필수 설정
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    # 금융 보안을 위해 대상 타입을 ip로 설정 (성능 및 보안 유리)
+    alb.ingress.kubernetes.io/target-type: ip
+    # 헬스 체크 설정 (서비스가 살아있는지 확인)
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '15'
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          # 1. 백엔드 API 경로 설정 (예: /api 로 시작하는 요청은 백엔드로)
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 80
+          # 2. 그 외 모든 경로는 프론트엔드로 전달
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80

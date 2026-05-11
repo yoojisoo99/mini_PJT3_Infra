@@ -16,13 +16,14 @@ resource "aws_security_group" "eks_nodes" {
     self      = true
   }
 
-  # 22번 포트 허용 
+  # [아키텍처 반영] Bastion -> 노드: 관리용 SSH 22번 허용
+
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    security_groups = ["sg-0fcfdf6de02bb46f5"]  # Bastion SG ID로 제한
-  description     = "SSH from Bastion only"
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    security_groups = ["sg-0fcfdf6de02bb46f5"] # 기존 Bastion SG ID
+    description     = "SSH Access via Bastion Host Only"
   }
 
   # ALB에서 노드로의 트래픽 허용 (NodePort 범위: 30000-32767)
@@ -229,25 +230,31 @@ resource "aws_iam_role_policy" "node_s3" {
 # EKS 관리형 노드 그룹
 # 프라이빗 서브넷에 워커 노드 배치 (보안상 권장)
 # ────────────────────────────────────────────────────────────────────────────
-
-resource "aws_eks_node_group" "main" {
+# ────────────────────────────────────────────────────────────────────────────
+# 프론트엔드 전용 노드 그룹
+# ────────────────────────────────────────────────────────────────────────────
+resource "aws_eks_node_group" "frontend" {
   cluster_name    = aws_eks_cluster.main.name
-  node_group_name = "${var.project_name}-node-group"
+  node_group_name = "${var.project_name}-frontend-node-group" # 이름으로 구분
   node_role_arn   = aws_iam_role.eks_node.arn
-  subnet_ids      = aws_subnet.private[*].id # 노드는 프라이빗 서브넷에 배치
+  subnet_ids      = aws_subnet.private[*].id
 
-  instance_types = [var.node_instance_type]
-  ami_type       = "AL2_x86_64"
-  version        = var.kubernetes_version
-
-  scaling_config {
-    desired_size = var.node_desired_size
-    min_size     = var.node_min_size
-    max_size     = var.node_max_size
+  instance_types = ["t3.medium"] # 프론트엔드 사양
+  
+  labels = {
+    role = "frontend" # 쿠버네티스 내부에서 프론트엔드 파드만 배치되도록 식별자 부여
   }
 
-  update_config {
-    max_unavailable = 1 # 롤링 업데이트 시 동시에 교체할 최대 노드 수
+  scaling_config {
+    # nodes_on이 false면 개수를 0으로 만들어 인스턴스를 삭제합니다.
+    desired_size = var.nodes_on ? 1 : 0 
+    min_size     = var.nodes_on ? 1 : 0
+    max_size     = 2
+  }
+
+  # EC2 콘솔에서 'Name' 태그로 보이게 설정
+  tags = {
+    "Name" = "${var.project_name}-frontend-worker"
   }
 
   depends_on = [
@@ -257,7 +264,45 @@ resource "aws_eks_node_group" "main" {
   ]
 
   remote_access {
-    ec2_ssh_key               = data.aws_key_pair.deployer.key_name
+    ec2_ssh_key               = "my-bastion-key" # ec2.tf에서 사용하는 키와 일치
+    source_security_group_ids = [aws_security_group.eks_nodes.id]
+  }
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# 백엔드 전용 노드 그룹
+# ────────────────────────────────────────────────────────────────────────────
+resource "aws_eks_node_group" "backend" {
+  cluster_name    = aws_eks_cluster.main.name
+  node_group_name = "${var.project_name}-backend-node-group" # 이름으로 구분
+  node_role_arn   = aws_iam_role.eks_node.arn
+  subnet_ids      = aws_subnet.private[*].id
+
+  instance_types = ["t3.medium"] # 백엔드 사양
+  
+  labels = {
+    role = "backend" # 쿠버네티스 내부에서 백엔드 파드만 배치되도록 식별자 부여
+  }
+
+  scaling_config {
+    # nodes_on이 false면 개수를 0으로 만들어 인스턴스를 삭제합니다.
+    desired_size = var.nodes_on ? 1 : 0 
+    min_size     = var.nodes_on ? 1 : 0
+    max_size     = 2
+  }
+
+  tags = {
+    "Name" = "${var.project_name}-backend-worker"
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_worker_node_policy,
+    aws_iam_role_policy_attachment.eks_ecr_read_only,
+    aws_iam_role_policy_attachment.eks_cni_policy,
+  ]
+
+  remote_access {
+    ec2_ssh_key               = "my-bastion-key"
     source_security_group_ids = [aws_security_group.eks_nodes.id]
   }
 }

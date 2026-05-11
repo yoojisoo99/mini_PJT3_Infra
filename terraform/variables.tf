@@ -74,6 +74,12 @@ variable "node_max_size" {
   default     = 4
 }
 
+variable "nodes_on" {
+  description = "노드 그룹 활성화 여부 (true: 시작, false: 종료)"
+  type        = bool
+  default     = true
+}
+
 # ── RDS ────────────────────────────────────────────────────────────────────
 
 variable "database_subnet_cidrs" {
