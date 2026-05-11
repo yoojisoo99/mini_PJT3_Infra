@@ -35,10 +35,6 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 
-resource "aws_key_pair" "deployer" {
-  key_name   = "${var.project_name}-key" # 인스턴스에 부여할 키 이름
-  public_key = file("~/.ssh/id_rsa.pub") # 내 컴퓨터의 공개키 경로
-}
 # ────────────────────────────────────────────────────────────────────────────
 # [참고] terraform apply 순서 의존성 요약
 #
