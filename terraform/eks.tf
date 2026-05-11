@@ -21,8 +21,8 @@ resource "aws_security_group" "eks_nodes" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
-    description = "SSH access"
+    security_groups = ["sg-0fcfdf6de02bb46f5"]  # Bastion SG ID로 제한
+  description     = "SSH from Bastion only"
   }
 
   # ALB에서 노드로의 트래픽 허용 (NodePort 범위: 30000-32767)
