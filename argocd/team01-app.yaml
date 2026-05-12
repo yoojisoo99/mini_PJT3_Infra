@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: team01-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/miniPJT3/mini_PJT3_Infra.git
+    targetRevision: main
+    path: manifests
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

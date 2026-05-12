@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/miniPJT3/mini_PJT3_Infra.git
+    targetRevision: main
+    path: manifests/frontend
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mini-project3
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
