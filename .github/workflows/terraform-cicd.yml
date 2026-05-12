@@ -3,13 +3,13 @@ name: "Terraform Infrastructure CI/CD"
 on:
   push:
     branches:
-      - feat/DB_public
+      - main
     paths:
       - "terraform/**"
       - ".github/workflows/terraform-cicd.yml"
   pull_request:
     branches:
-      - feat/DB_public
+      - main
     paths:
       - "terraform/**"
 
