@@ -26,7 +26,7 @@ spec:
         - containerPort: 8080
         env:
         - name: DB_HOST
-          value: "지수님의-rds-엔드포인트-주소"
+          value: "terraform-20260508075842560200000001.c18y4gs8uo61.ap-northeast-2.rds.amazonaws.com"
         - name: REDIS_HOST
           value: "지수님의-redis-엔드포인트-주소"
         # 금융 보안을 위한 리소스 제한 설정
