@@ -21,7 +21,7 @@ spec:
       containers:
       - name: backend-container
         # 이전 출력값에서 확인된 ECR 주소 사용
-        image: 805400277714.dkr.ecr.ap-northeast-2.amazonaws.com/team01-mini-project3/backend:latest
+        image: 805400277714.dkr.ecr.ap-northeast-2.amazonaws.com/team01-mini-project3/backend:a350de6e31c83dcf62b3125796ae919c26a4da75
         ports:
         - containerPort: 8080
         env:
