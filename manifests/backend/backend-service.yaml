@@ -8,6 +8,6 @@ spec:
   selector:
     app: backend             # backend-deployment.yaml의 label과 일치해야 함
   ports:
-    - port: 8080             # 서비스가 노출할 포트
+    - port: 80             # 서비스가 노출할 포트
       targetPort: 8080       # 실제 컨테이너의 포트
       protocol: TCP
