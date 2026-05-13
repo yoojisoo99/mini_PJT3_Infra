@@ -20,7 +20,7 @@ spec:
         role: frontend
       containers:
       - name: frontend-container
-        image: 805400277714.dkr.ecr.ap-northeast-2.amazonaws.com/team01-mini-project3/frontend:2428dbd8fe8ab714a1b35262271122251bc22231
+        image: 805400277714.dkr.ecr.ap-northeast-2.amazonaws.com/team01-mini-project3/frontend:098a7392659f74e200ec56f05f79019275b1c492
         ports:
         - containerPort: 80 # Nginx 등을 사용하는 경우
 ---
