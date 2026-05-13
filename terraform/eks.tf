@@ -35,6 +35,14 @@ resource "aws_security_group" "eks_nodes" {
     description = "ALB to NodePort"
   }
 
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = var.public_subnet_cidrs
+    description = "ALB to backend pod direct"
+  }
+
   # EKS 컨트롤 플레인 → 노드 kubelet 통신
   ingress {
     from_port   = 443
