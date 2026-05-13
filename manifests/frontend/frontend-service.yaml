@@ -9,5 +9,5 @@ spec:
     app: frontend            # frontend-deployment.yaml의 label과 일치해야 함
   ports:
     - port: 80               # 서비스가 노출할 포트
-      targetPort: 3000       # 프론트엔드 앱 포트 (이미지 설정에 따라 80 또는 3000)
+      targetPort: 80      # 프론트엔드 앱 포트 (이미지 설정에 따라 80 또는 3000)
       protocol: TCP
