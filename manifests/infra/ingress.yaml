@@ -10,7 +10,7 @@ metadata:
     # 금융 보안을 위해 대상 타입을 ip로 설정 (성능 및 보안 유리)
     alb.ingress.kubernetes.io/target-type: ip
     # 헬스 체크 설정 (서비스가 살아있는지 확인)
-    alb.ingress.kubernetes.io/healthcheck-path: /api
+    #alb.ingress.kubernetes.io/healthcheck-path: /api
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: '15'
 spec:
   ingressClassName: alb
