@@ -7,8 +7,8 @@ metadata:
     # AWS ALB를 사용하기 위한 필수 설정
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
-    # 금융 보안을 위해 대상 타입을 ip로 설정 (성능 및 보안 유리)
-    alb.ingress.kubernetes.io/target-type: ip
+    #nodeport 연결
+    alb.ingress.kubernetes.io/target-type: instance
     # 헬스 체크 설정 (서비스가 살아있는지 확인)
     alb.ingress.kubernetes.io/healthcheck-path: /api/products
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: '15'
