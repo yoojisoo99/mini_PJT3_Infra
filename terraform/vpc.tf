@@ -52,7 +52,7 @@ resource "aws_subnet" "private" {
 }
 
 # ────────────────────────────────────────────────────────────────────────────
-# 데이터베이스 서브넷 (DB Zone: RDS, Redis 배치)
+# 데이터베이스 서브넷 (DB Zone: RDS 배치)
 # ────────────────────────────────────────────────────────────────────────────
 
 resource "aws_subnet" "database" {
@@ -76,6 +76,26 @@ resource "aws_route_table" "database" {
 resource "aws_route_table_association" "database" {
   count          = length(aws_subnet.database)
   subnet_id      = aws_subnet.database[count.index].id
+  route_table_id = aws_route_table.database.id
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# redis 서브넷 
+# ────────────────────────────────────────────────────────────────────────────
+resource "aws_subnet" "redis" {
+  count             = 2
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, count.index + 30) # 30번 대역 사용 추천
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
+  tags = {
+    Name = "${var.project_name}-redis-subnet-${count.index + 1}"
+  }
+}
+
+resource "aws_route_table_association" "redis_to_db_rt" {
+  count          = length(aws_subnet.redis)
+  subnet_id      = aws_subnet.redis[count.index].id
   route_table_id = aws_route_table.database.id
 }
 
