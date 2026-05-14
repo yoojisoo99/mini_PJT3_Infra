@@ -20,7 +20,7 @@ spec:
         role: backend
       containers:
       - name: backend-container
-        image: 805400277714.dkr.ecr.ap-northeast-2.amazonaws.com/team01-mini-project3/backend:26358751a40ac0f8262ce2938ad9f4baf221a60f
+        image: 805400277714.dkr.ecr.ap-northeast-2.amazonaws.com/team01-mini-project3/backend:006be8fabbf91d0cff621e66a9fc157591ce274c
         ports:
         - containerPort: 8080 # Spring Boot 기본 포트
         env:
