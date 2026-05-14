@@ -8,6 +8,7 @@ metadata:
     # AWS ALB를 사용하기 위한 필수 설정
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/security-groups: sg-0ec5c32c8d4e5cfb5
     #nodeport 연결
     alb.ingress.kubernetes.io/target-type: ip
     
