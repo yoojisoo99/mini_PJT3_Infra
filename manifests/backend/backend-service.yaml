@@ -5,7 +5,7 @@ metadata:
   namespace: mini-project3
   annotations:
     alb.ingress.kubernetes.io/healthcheck-path: /api/health
-    alb.ingress.kubernetes.io/success-codes: '200,302,403,405'
+    #alb.ingress.kubernetes.io/success-codes: '200,302,403,405'
 spec:                  # 이 줄 추가
   type: NodePort
   selector:
