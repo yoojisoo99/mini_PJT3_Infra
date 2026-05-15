@@ -5,9 +5,9 @@ metadata:
   namespace: mini-project3
   annotations:
     # [2] IP 모드 사용 시 백엔드 전용 헬스 체크 경로 지정
-    alb.ingress.kubernetes.io/healthcheck-path: /api/products
+    alb.ingress.kubernetes.io/healthcheck-path: /api/test
     # 성공 코드 설정 (필요시)
-    alb.ingress.kubernetes.io/success-codes: '200,302'
+    alb.ingress.kubernetes.io/success-codes: '200,302,403'
 spec:
   # [3] IP 모드에서는 NodePort 혹은 ClusterIP 모두 가능합니다. 
   type: NodePort 
