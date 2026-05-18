@@ -20,6 +20,6 @@ spec:
         role: frontend
       containers:
       - name: frontend-container
-        image: 805400277714.dkr.ecr.ap-northeast-2.amazonaws.com/team01-mini-project3/frontend:1b5efb1351ad7668c7e12f572ae2dd493c0e13dc
+        image: 805400277714.dkr.ecr.ap-northeast-2.amazonaws.com/team01-mini-project3/frontend:a9c4c70ffca9b8acf335a26da6ddf76e7d83e3ac
         ports:
         - containerPort: 80
